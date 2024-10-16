@@ -7,7 +7,7 @@ abstract class Person {
     protected Person(String name){
         this.name = name;
     }
-    public abstract void eat();
+    public abstract String eat(int a);
     public void speak(){
         System.out.println("Xin chào tôi tên: " + name);
     }
