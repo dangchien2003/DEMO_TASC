@@ -1,58 +1,130 @@
 package org.example;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
 public class Main {
-        public static void main(String[] args) {
-            List<Integer> arrayList = new ArrayList<>();
+    private static final int NUM_THREADS = 100;
+    private static final int NUM_ELEMENTS = 1000;
 
-            // Thêm phần tử vào ArrayList
-            for (int i = 0; i < 5; i++) {
-                arrayList.add(i);
-            }
-
-            // Tạo các luồng
-            Thread thread1 = new Thread(() -> {
-                for (int i = 0; i < 5; i++) {
-                    arrayList.set(i, 10+i);
-                    System.out.println("Thread 1 đã thêm: " + (i + 10));
-                    try {
-                        Thread.sleep(100); // Giả lập thời gian xử lý
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+    public static void main(String[] args) {
+//        mô phỏng sự khác nhau trong môi trương đa luồng
+        List<Integer> vector = new Vector<>();
+        List<Integer> arrayList = new ArrayList<>();
+        List<Integer> linkedList = new LinkedList<>();
+        System.out.println("vector");
+        run(vector);
+        System.out.println("array list");
+        run(arrayList);
+        System.out.println("linked list");
+        run(linkedList);
+    }
+    
+    private static void run(List list){
+        Thread[] vectorThreads = new Thread[NUM_THREADS];
+        for (int i = 0; i < NUM_THREADS; i++) {
+            vectorThreads[i] = new Thread(() -> {
+                for (int j = 0; j < NUM_ELEMENTS; j++) {
+                    list.add(j);
                 }
             });
-
-            Thread thread2 = new Thread(() -> {
-                for (int i = 0; i < 5; i++) {
-                    try {
-                        // Thử đọc giá trị tại chỉ mục i
-                        System.out.println("Thread 2 đọc: " + arrayList.get(i));
-                    } catch (IndexOutOfBoundsException e) {
-                        System.out.println("Thread 2 đã gặp lỗi: " + e.getMessage());
-                    }
-                    try {
-                        Thread.sleep(100); // Giả lập thời gian xử lý
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            thread1.start();
-            thread2.start();
-
-            try {
-                thread1.join();
-                thread2.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            System.out.println("Nội dung ArrayList cuối cùng: " + arrayList);
         }
+        long startTime = System.nanoTime();
+        for (Thread thread : vectorThreads) {
+            thread.start();
+        }
+        try {
+            for (Thread thread : vectorThreads) {
+                thread.join();
+            }
+        }catch (InterruptedException e){
+            System.out.println("error join thread");
+        }
+        long endTime = System.nanoTime();
+        System.out.println("list size: " + list.size());
+        System.out.println("list time: " + (endTime - startTime) +" ns");
+    }
 
+    static void linkedList(){
+        LinkedList<Integer> list = new LinkedList<>();
+
+        // Thêm các phần tử vào ArrayList
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        list.add(5);
+
+        list.add(10);
+        System.out.println("Phần tử thứ 3: " + list.get(2));
+
+        list.add(2, 99);
+        System.out.println("Danh sách sau khi thêm phần tử 99 vào vị trí thứ 3: " + list);
+
+        list.set(3, 100);
+        System.out.println("Danh sách sau khi thêm phần tử 100 vào vị trí thứ 4: " + list);
+
+
+        list.remove(2);
+        System.out.println("Danh sách sau khi xoá phần tử thứ 3: " + list);
+
+        System.out.println(list.size());
+    }
+
+    static void vector(){
+        Vector<Integer> list = new Vector<>();
+
+        // Thêm các phần tử vào ArrayList
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        list.add(5);
+
+        list.add(10);
+        System.out.println("Phần tử thứ 3: " + list.get(2));
+
+        list.add(2, 99);
+        System.out.println("Danh sách sau khi thêm phần tử 99 vào vị trí thứ 3: " + list);
+
+        list.set(3, 100);
+        System.out.println("Danh sách sau khi thêm phần tử 100 vào vị trí thứ 4: " + list);
+
+
+        list.remove(2);
+        System.out.println("Danh sách sau khi xoá phần tử thứ 3: " + list);
+
+        System.out.println(list.size());
+    }
+
+    static void arrayList(){
+        ArrayList<Integer> list = new ArrayList<>();
+
+        // Thêm các phần tử vào ArrayList
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        list.add(5);
+
+        list.add(10);
+        System.out.println("Phần tử thứ 3: " + list.get(2));
+
+        list.add(2, 99);
+        System.out.println("Danh sách sau khi thêm phần tử 99 vào vị trí thứ 3: " + list);
+
+        list.set(3, 100);
+        System.out.println("Danh sách sau khi thêm phần tử 100 vào vị trí thứ 4: " + list);
+
+
+        list.remove(2);
+        System.out.println("Danh sách sau khi xoá phần tử thứ 3: " + list);
+
+        // trimToSize() để thu hẹp kích thước bộ nhớ
+        list.trimToSize();
+        System.out.println(list.size());
+    }
 }
