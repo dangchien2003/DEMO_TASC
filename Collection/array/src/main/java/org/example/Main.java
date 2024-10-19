@@ -39,5 +39,13 @@ public class Main {
         System.out.println(arr4[0]);
         // lỗi
 //        System.out.println(arr4[n]);
+        arr2();
+    }
+
+    static void arr2(){
+        int[][] arr = new int[3][3];
+        arr[1][1] = 2;
+        System.out.println("Phần tử vị trí 1,1: "+ arr[1][1]);
+        System.out.println(arr.length);
     }
 }
