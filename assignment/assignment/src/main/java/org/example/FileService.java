@@ -50,7 +50,7 @@ public class FileService implements IFileService {
         return convertTmpToDataFile();
     }
 
-    private boolean writeDataTmp(Map<String, Customer> data, String ignoreKey) {
+    private synchronized boolean writeDataTmp(Map<String, Customer> data, String ignoreKey) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(TMP_PATH))) {
             Set<String> keys = data.keySet();
             for (String key : keys) {

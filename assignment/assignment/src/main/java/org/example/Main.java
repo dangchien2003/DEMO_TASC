@@ -45,10 +45,10 @@ public class Main {
         String phone = findByPhoneNumber();
         if (phone == null)
             return;
-        if(fileService.delete(phone, customers)){
+        if (fileService.delete(phone, customers)) {
             customers.remove(phone);
             System.out.println("Xoá thành công");
-        }else {
+        } else {
             System.out.println("Lỗi xoá dữ liệu file");
         }
 
@@ -145,7 +145,7 @@ public class Main {
                 customers.put(customer.getPhoneNumber(), customer);
                 System.out.println("Thêm thành công.");
 
-                if (!fileService.save(customer)){
+                if (!fileService.save(customer)) {
                     customers.remove(customer.getPhoneNumber());
                     System.out.println("Lỗi lưu file");
                 }
