@@ -6,8 +6,10 @@ public class Main {
 
     static Scanner scanner = new Scanner(System.in);
     static Map<String, Customer> customers = new HashMap<>();
+    static FileService fileService = new FileService();
 
     public static void main(String[] args) {
+        customers = fileService.readData();
         showMenu();
         while (true) {
             process(getChoice());
@@ -43,9 +45,13 @@ public class Main {
         String phone = findByPhoneNumber();
         if (phone == null)
             return;
+        if(fileService.delete(phone, customers)){
+            customers.remove(phone);
+            System.out.println("Xoá thành công");
+        }else {
+            System.out.println("Lỗi xoá dữ liệu file");
+        }
 
-        customers.remove(phone);
-        System.out.println("Xoá thành công");
     }
 
     static void editCustomer() {
@@ -60,8 +66,14 @@ public class Main {
                 mergeCustomer(customer, phone);
 
                 customers.put(customer.getPhoneNumber(), customer);
+
+                if (!fileService.update(phone, customer, customers)) {
+                    System.out.println("Lỗi đọc ghi file");
+                }
+
                 if (!customer.getPhoneNumber().equals(phone))
                     customers.remove(phone);
+
                 break;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -132,6 +144,12 @@ public class Main {
 
                 customers.put(customer.getPhoneNumber(), customer);
                 System.out.println("Thêm thành công.");
+
+                if (!fileService.save(customer)){
+                    customers.remove(customer.getPhoneNumber());
+                    System.out.println("Lỗi lưu file");
+                }
+
 
                 ++turn;
             } catch (Exception e) {

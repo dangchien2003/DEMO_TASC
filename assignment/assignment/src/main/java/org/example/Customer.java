@@ -2,7 +2,7 @@ package org.example;
 
 import java.util.StringJoiner;
 
-public class Customer extends Person implements ICustomer {
+public class Customer extends Person {
 
     private String email;
     private String phoneNumber;
@@ -18,7 +18,6 @@ public class Customer extends Person implements ICustomer {
     }
 
     public void setEmail(String email, boolean allowNull) throws Exception {
-
         if (allowNull && (email == null || email.isEmpty()))
             this.email = null;
         else if (email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
@@ -38,18 +37,6 @@ public class Customer extends Person implements ICustomer {
             this.phoneNumber = phoneNumber;
         else
             throw new Exception("Invalid phone number");
-    }
-
-    @Override
-    public boolean updateInfo() {
-        return false;
-    }
-
-    @Override
-    public void showInfo() {
-        System.out.println("Tên: " + getName());
-        System.out.println("Email: " + getEmail());
-        System.out.println("SĐT: " + getPhoneNumber());
     }
 
     @Override
