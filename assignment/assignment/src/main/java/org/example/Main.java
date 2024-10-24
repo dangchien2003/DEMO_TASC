@@ -111,9 +111,14 @@ public class Main {
 
     static int getChoice() {
         System.out.println("Nhập lựa chọn: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-        return choice;
+        try {
+            int choice = scanner.nextInt();
+            return choice;
+        }catch (InputMismatchException e){
+            return -1;
+        }finally {
+            scanner.nextLine();
+        }
     }
 
     static void showAllCustomer() {
