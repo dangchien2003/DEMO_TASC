@@ -1,5 +1,8 @@
 package org.example;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Main {
@@ -9,7 +12,19 @@ public class Main {
     static FileService fileService = new FileService();
 
     public static void main(String[] args) {
-        customers = fileService.readData();
+//        customers = Data.fakeData(1_000_000);
+//        fileService.saveAll(customers);
+        LocalDateTime start = LocalDateTime.now();
+        customers = fileService.readDataThread(2);
+//        System.out.println(customers.size());
+        LocalDateTime end = LocalDateTime.now();
+        System.out.println(ChronoUnit.MILLIS.between(start, end));
+
+        LocalDateTime start1 = LocalDateTime.now();
+        fileService.readData();
+//        System.out.println(fileService.readData().size());
+        LocalDateTime end1 = LocalDateTime.now();
+        System.out.println(ChronoUnit.MILLIS.between(start1, end1));
         showMenu();
         while (true) {
             process(getChoice());
@@ -63,8 +78,13 @@ public class Main {
         while (true) {
             try {
                 Customer customer = createCustomer(true);
-                mergeCustomer(customer, phone);
 
+                if (customers.containsKey(customer.getPhoneNumber()) && !customer.getPhoneNumber().equals(phone)) {
+                    System.out.println("Số điện thoại đã tồn tại");
+                    continue;
+                }
+
+                mergeCustomer(customer, phone);
                 customers.put(customer.getPhoneNumber(), customer);
 
                 if (!fileService.update(phone, customer, customers)) {
@@ -114,9 +134,9 @@ public class Main {
         try {
             int choice = scanner.nextInt();
             return choice;
-        }catch (InputMismatchException e){
+        } catch (InputMismatchException e) {
             return -1;
-        }finally {
+        } finally {
             scanner.nextLine();
         }
     }
