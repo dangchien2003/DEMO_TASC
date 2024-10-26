@@ -23,7 +23,7 @@ public class FileService implements IFileService {
     }
     @Override
     public boolean saveAll(Map<String, Customer> data) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(PATH, true))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(PATH))) {
             data.values()
                     .forEach(customer -> {
                                 try {
@@ -90,44 +90,6 @@ public class FileService implements IFileService {
         return customers;
     }
 
-
-    public Map<String, Customer> readDataThread1(int threadCount) {
-        Map<String, Customer> customers = new HashMap<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(PATH))) {
-
-            ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-
-            for (int i = 0; i < threadCount; i++) {
-                executorService.submit(() -> {
-                    try {
-                        String line = reader.readLine();
-
-                        while (line != null && !line.isBlank()) {
-                            Customer customer = convertToCustomer(line);
-                            customers.put(customer.getPhoneNumber(), customer);
-                            line = reader.readLine();
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-            executorService.shutdown();
-            executorService.awaitTermination(5, TimeUnit.SECONDS);
-            System.out.println("đọc xong");
-        } catch (Exception e) {
-            System.out.println("Lỗi lấy dữ liệu");
-            System.exit(1);
-        }
-
-//        return customers;
-        return null;
-    }
-
     @Override
     public boolean update(String phone, Customer newCustomer, Map<String, Customer> data) {
         return writeDataTmp(data, phone) && convertTmpToDataFile();
@@ -142,6 +104,20 @@ public class FileService implements IFileService {
     }
 
     private synchronized boolean writeDataTmp(Map<String, Customer> data, String ignoreKey) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(TMP_PATH))) {
+            data.values()
+                    .forEach(customer -> {
+                                try {
+                                    bw.write(customer.toString() + "\n");
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                    );
+        } catch (IOException e) {
+            return false;
+        }
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(TMP_PATH))) {
             Set<String> keys = data.keySet();
             for (String key : keys) {
