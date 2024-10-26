@@ -1,11 +1,14 @@
 package org.example;
 
 import java.io.*;
-import java.time.temporal.ChronoUnit;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.*;
 
 public class FileService implements IFileService {
+
     final String PATH = "src/main/java/org/example/data.txt";
     final String TMP_PATH = "src/main/java/org/example/tmp.txt";
 
@@ -18,56 +21,85 @@ public class FileService implements IFileService {
         }
         return true;
     }
-
+    @Override
     public boolean saveAll(Map<String, Customer> data) {
-        data.values()
-                .forEach(customer -> {
-                            try (BufferedWriter bw = new BufferedWriter(new FileWriter(PATH, true))) {
-                                bw.write(customer.toString() + "\n");
-                            } catch (IOException e) {
-
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(PATH, true))) {
+            data.values()
+                    .forEach(customer -> {
+                                try {
+                                    bw.write(customer.toString() + "\n");
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
                             }
-                        }
-                );
+                    );
+        } catch (IOException e) {
+            return false;
+        }
+
         return true;
     }
 
-    @Override
-    public Map<String, Customer> readData() {
-        Map<String, Customer> customers = new HashMap<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(PATH))) {
-            String line = reader.readLine();
-            while (line != null && !line.isBlank()) {
-//                String[] split = line.split("-");
-                Customer customer = convertToCustomer(line);
-//                customers.put(split[2], new Customer(split[0], split[1], split[2], false));
-                customers.put(customer.getPhoneNumber(), customer);
-
-                line = reader.readLine();
-            }
-        } catch (Exception e) {
-            System.out.println("Lỗi lấy dữ liệu");
-            System.exit(1);
-        }
-return null;
-//        return customers;
-    }
-
-    private Customer convertToCustomer(String lineCustomer) throws Exception {
+    private Customer convertToCustomer(String lineCustomer) {
         String[] split = lineCustomer.split("-");
-        return new Customer(split[0], split[1], split[2], false);
+
+        Customer customer = new Customer(split[0], split[1], split[2]);
+        return customer;
+
     }
 
-    public Map<String, Customer> readDataThread(int threadCount) {
+    public Map<String, Customer> readData(int numberThread) {
+        Map<String, Customer> customers = new ConcurrentHashMap<>();
+        String[] customersStr;
+        try {
+            byte[] contentByte = Files.readAllBytes(Paths.get(PATH));
+            String contentStr = new String(contentByte, StandardCharsets.UTF_8);
+            customersStr = contentStr.split("\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        int size = customersStr.length;
+        int chunkSize = (size + numberThread - 1) / numberThread;
+        ExecutorService executorService = Executors.newFixedThreadPool(numberThread);
+
+        for (int i = 0; i < numberThread; i++) {
+            int start = i * chunkSize;
+            int end = start + chunkSize;
+            executorService.submit(()-> {
+                for(int j = start; j < end; j++) {
+                    String customerData = customersStr[j];
+                    try {
+                        Customer customer = convertToCustomer(customerData);
+                        customers.put(customer.getPhoneNumber(), customer);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        }
+
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(1000, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            return null;
+        }
+        return customers;
+    }
+
+
+    public Map<String, Customer> readDataThread1(int threadCount) {
         Map<String, Customer> customers = new HashMap<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(PATH))) {
 
             ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
-            for (int i = 0; i < threadCount; i++){
-                executorService.submit(()-> {
+            for (int i = 0; i < threadCount; i++) {
+                executorService.submit(() -> {
                     try {
                         String line = reader.readLine();
 

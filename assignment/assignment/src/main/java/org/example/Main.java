@@ -1,6 +1,5 @@
 package org.example;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -8,23 +7,25 @@ import java.util.*;
 public class Main {
 
     static Scanner scanner = new Scanner(System.in);
-    static Map<String, Customer> customers = new HashMap<>();
+    static Map<String, Customer> customers;
     static FileService fileService = new FileService();
 
+    static CustomerService customerService = new CustomerService();
     public static void main(String[] args) {
-//        customers = Data.fakeData(1_000_000);
-//        fileService.saveAll(customers);
-        LocalDateTime start = LocalDateTime.now();
-        customers = fileService.readDataThread(2);
-//        System.out.println(customers.size());
-        LocalDateTime end = LocalDateTime.now();
-        System.out.println(ChronoUnit.MILLIS.between(start, end));
+        new Thread(() -> {
+//            LocalDateTime start = LocalDateTime.now();
+            customers = fileService.readData(4);
+//            LocalDateTime end = LocalDateTime.now();
+//            System.out.println(ChronoUnit.MILLIS.between(start, end));
+//            System.out.println(customers.size());
+        }).start();
 
-        LocalDateTime start1 = LocalDateTime.now();
-        fileService.readData();
+//
+//        LocalDateTime start1 = LocalDateTime.now();
+//        fileService.readData();
 //        System.out.println(fileService.readData().size());
-        LocalDateTime end1 = LocalDateTime.now();
-        System.out.println(ChronoUnit.MILLIS.between(start1, end1));
+//        LocalDateTime end1 = LocalDateTime.now();
+//        System.out.println(ChronoUnit.MILLIS.between(start1, end1));
         showMenu();
         while (true) {
             process(getChoice());
@@ -34,19 +35,25 @@ public class Main {
     static void process(int choice) {
         switch (choice) {
             case 1:
-                showAllCustomer();
+                customerService.showAllCustomer();
                 break;
             case 2:
-                addCustomer();
+                System.out.println("Số lượng khách hàng sẽ thêm: ");
+                int n = scanner.nextInt();
+                scanner.nextLine();
+                customerService.addCustomer(n);
                 break;
             case 3:
-                findByPhoneNumber();
+                customerService.findByPhoneNumber(Utils.inputPhoneNumber(false));
                 break;
             case 4:
-                editCustomer();
+                customerService.editCustomer();
                 break;
             case 5:
-                removeCustomer();
+                customerService.removeCustomer();
+                break;
+            case 6:
+                showMenu();
                 break;
             case 0:
                 System.exit(1);
@@ -56,78 +63,7 @@ public class Main {
         }
     }
 
-    static void removeCustomer() {
-        String phone = findByPhoneNumber();
-        if (phone == null)
-            return;
-        if (fileService.delete(phone, customers)) {
-            customers.remove(phone);
-            System.out.println("Xoá thành công");
-        } else {
-            System.out.println("Lỗi xoá dữ liệu file");
-        }
 
-    }
-
-    static void editCustomer() {
-        String phone = findByPhoneNumber();
-        if (phone == null)
-            return;
-
-        System.out.println("Thông tin cũ được giữ lại khi trường bị bỏ trống");
-        while (true) {
-            try {
-                Customer customer = createCustomer(true);
-
-                if (customers.containsKey(customer.getPhoneNumber()) && !customer.getPhoneNumber().equals(phone)) {
-                    System.out.println("Số điện thoại đã tồn tại");
-                    continue;
-                }
-
-                mergeCustomer(customer, phone);
-                customers.put(customer.getPhoneNumber(), customer);
-
-                if (!fileService.update(phone, customer, customers)) {
-                    System.out.println("Lỗi đọc ghi file");
-                }
-
-                if (!customer.getPhoneNumber().equals(phone))
-                    customers.remove(phone);
-
-                break;
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-        System.out.println("Đã chỉnh sửa");
-    }
-
-    static void mergeCustomer(Customer customer, String phone) throws Exception {
-        if (customer.getName() == null || customer.getName().isBlank()) {
-            customer.setName(customers.get(phone).getName(), false);
-        }
-
-        if (customer.getEmail() == null || customer.getEmail().isBlank()) {
-            customer.setEmail(customers.get(phone).getEmail(), false);
-        }
-
-        if (customer.getPhoneNumber() == null || customer.getPhoneNumber().isBlank()) {
-            customer.setPhoneNumber(customers.get(phone).getPhoneNumber(), false);
-        }
-    }
-
-    static String findByPhoneNumber() {
-        System.out.println("Số điện thoại: ");
-        String phone = scanner.nextLine();
-
-        Customer customer = customers.get(phone);
-        if (customer == null) {
-            System.out.println("Không tìm thấy");
-            return null;
-        }
-        System.out.println(customer);
-        return phone;
-    }
 
     static int getChoice() {
         System.out.println("Nhập lựa chọn: ");
@@ -141,66 +77,13 @@ public class Main {
         }
     }
 
-    static void showAllCustomer() {
-        if (customers.size() == 0) {
-            System.out.println("Không có dữ liệu");
-            return;
-        }
-
-        Set<String> customerIds = customers.keySet();
-        customerIds.forEach(key ->
-                System.out.println(customers.get(key).toString())
-        );
-    }
-
-    static void addCustomer() {
-        System.out.println("Số lượng khách hàng sẽ thêm: ");
-        int n = scanner.nextInt();
-        scanner.nextLine();
-        int turn = 0;
-        while (turn < n) {
-            try {
-                Customer customer = createCustomer(false);
-
-                if (customers.containsKey(customer.getPhoneNumber())) {
-                    System.out.println("Số điện thoại đã tồn tại");
-                    continue;
-                }
-
-                customers.put(customer.getPhoneNumber(), customer);
-                System.out.println("Thêm thành công.");
-
-                if (!fileService.save(customer)) {
-                    customers.remove(customer.getPhoneNumber());
-                    System.out.println("Lỗi lưu file");
-                }
-
-
-                ++turn;
-            } catch (Exception e) {
-                System.out.println("Nhập lại do lỗi: " + e.getMessage());
-            }
-        }
-    }
-
-    private static Customer createCustomer(boolean allowNull) throws Exception {
-        System.out.println("Nhập tên: ");
-        String name = scanner.nextLine();
-        System.out.println("Nhập email: ");
-        String email = scanner.nextLine();
-        System.out.println("Nhập số điện thoại: ");
-        String phone = scanner.nextLine();
-
-        return new Customer(name, email, phone, allowNull);
-    }
-
-
     static void showMenu() {
         System.out.println("1: Danh sách khách hàng");
         System.out.println("2: Thêm khách hàng");
         System.out.println("3: Tìm theo số điện thoại");
         System.out.println("4: Chỉnh sửa thông tin khách hàng");
         System.out.println("5: Xoá khách hàng");
+        System.out.println("6: Xem menu");
         System.out.println("0: Đóng chương trình");
     }
 }

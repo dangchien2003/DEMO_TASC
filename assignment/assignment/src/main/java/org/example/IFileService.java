@@ -9,5 +9,7 @@ public interface IFileService {
 
     boolean delete(String phone, Map<String, Customer> data);
 
-    Map<String, Customer> readData();
+    Map<String, Customer> readData(int thread);
+
+    boolean saveAll(Map<String, Customer> data);
 }
