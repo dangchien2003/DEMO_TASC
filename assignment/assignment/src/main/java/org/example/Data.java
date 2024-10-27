@@ -8,7 +8,7 @@ import java.util.Map;
 public class Data {
     public static void main(String[] args) {
         LocalDateTime start = LocalDateTime.now();
-        Main.customers = Data.fakeData(10_000_000);
+        Main.customers = Data.fakeData(1_000_000);
         System.out.println(Main.customers.size());
         Main.fileService.saveAll(Main.customers);
         LocalDateTime end = LocalDateTime.now();

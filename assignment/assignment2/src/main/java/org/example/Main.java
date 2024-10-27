@@ -2,7 +2,9 @@ package org.example;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.Map;
+import java.util.Scanner;
 
 public class Main {
 
@@ -11,14 +13,16 @@ public class Main {
     static FileService fileService = new FileService();
 
     static CustomerService customerService = new CustomerService();
+
     public static void main(String[] args) {
-        new Thread(() -> {
-            LocalDateTime start = LocalDateTime.now();
-            customers = fileService.readData(4);
-            LocalDateTime end = LocalDateTime.now();
-            System.out.println(ChronoUnit.MILLIS.between(start, end));
-            System.out.println(customers.size());
-        }).start();
+
+//        new Thread(() -> {
+//            LocalDateTime start = LocalDateTime.now();
+//            customers = fileService.readData(4);
+//            LocalDateTime end = LocalDateTime.now();
+//            System.out.println(ChronoUnit.MILLIS.between(start, end));
+//            System.out.println(customers.size());
+//        }).start();
 
 //
 //        LocalDateTime start1 = LocalDateTime.now();
@@ -35,7 +39,11 @@ public class Main {
     static void process(int choice) {
         switch (choice) {
             case 1:
+                LocalDateTime start = LocalDateTime.now();
                 customerService.showAllCustomer();
+                LocalDateTime end = LocalDateTime.now();
+                System.out.println(ChronoUnit.MILLIS.between(start, end));
+
                 break;
             case 2:
                 System.out.println("Số lượng khách hàng sẽ thêm: ");
@@ -44,7 +52,12 @@ public class Main {
                 customerService.addCustomer(n);
                 break;
             case 3:
-                customerService.findByPhoneNumber(Utils.inputPhoneNumber(false));
+                String phone = Utils.inputPhoneNumber(false);
+                Customer customer = customerService.findCustomerByPhoneNumber(phone);
+                if (customer != null)
+                    System.out.println(customer);
+                else
+                    System.out.println("Không tìm thấy khách hàng");
                 break;
             case 4:
                 customerService.editCustomer();
@@ -62,7 +75,6 @@ public class Main {
                 System.out.println("Lựa chọn không đúng");
         }
     }
-
 
 
     static int getChoice() {
