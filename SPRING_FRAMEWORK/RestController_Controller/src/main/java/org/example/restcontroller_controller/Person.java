@@ -3,9 +3,11 @@ package org.example.restcontroller_controller;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import org.example.restcontroller_controller.validator.NotEqualsConstraint;
 
 public class Person {
     @NotBlank
+    @NotEqualsConstraint("chien")
     String name;
     @NotBlank
     String address;
