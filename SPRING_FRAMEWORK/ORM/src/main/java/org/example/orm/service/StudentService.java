@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import org.example.orm.entity.Course;
 import org.example.orm.entity.Student;
 import org.example.orm.repository.StudentRepository;
+import org.example.orm.repository.StudentRepository2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,8 @@ import java.util.List;
 public class StudentService {
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private StudentRepository2 studentRepository2;
 
     public Student save() {
         Student student = Student.builder()
@@ -29,8 +32,8 @@ public class StudentService {
 
     @Transactional
     public Student get() {
-        Student its = studentRepository.findById(1).orElse(null);
-        Course course = its.getCourse();
-        return its;
+//        Student its = studentRepository.findById(1).orElse(null);
+//        Course course = its.getCourse();
+        return studentRepository2.findById(1).get(0);
     }
 }
