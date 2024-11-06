@@ -55,19 +55,21 @@ public class UserService {
     }
 
 
-//    public UserCreationResponse createAdmin(UserCreationRequest request) {
-//        User user = userRepository.findByEmail(request.getEmail())
-//                .orElse(null);
-//
-//        if (!Objects.isNull(user))
-//            throw new AppException(ErrorCode.EMAIL_EXISTED);
-//
-//        user = usersMapper.toUser(request);
-//        user.setUid(UUID.randomUUID().toString());
-//        user.setStatusCode(UserStatus.PENDING_VERIFIER);
-//
-//        user = userRepository.save(user);
-//
-//        return usersMapper.toUserCreationResponse(user);
-//    }
+    public void createAdmin(UserCreationRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElse(null);
+
+        if (!Objects.isNull(user))
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+
+        user = usersMapper.toUser(request);
+        user.setUid(UUID.randomUUID().toString());
+        user.setStatusCode(UserStatus.ACTIVE);
+
+        Role role = roleRepository.findById("ADMIN")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOTFOUND));
+        
+        user.setRole(role);
+        saveUser(user);
+    }
 }
