@@ -1,8 +1,6 @@
 package org.example.identityservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,12 +15,19 @@ import org.example.identityservice.enums.UserStatus;
 public class User extends EntityWithTimestamps {
     @Id
     String uid;
+
     @NotNull
     String email;
+
+    String name;
+
     @NotNull
     String password;
+
     @NotNull
-    UserStatus status_code;
+    @Enumerated(EnumType.STRING)
+    UserStatus statusCode;
+
     @ManyToOne
     Role role;
 }

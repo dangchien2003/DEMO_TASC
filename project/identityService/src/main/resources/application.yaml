@@ -21,3 +21,8 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: method
     tagsSorter: alpha
+
+token:
+  time-live-access-token: 1
+  time-live-refresh-token: 10
+  secret-key: ${SECRET_KEY}

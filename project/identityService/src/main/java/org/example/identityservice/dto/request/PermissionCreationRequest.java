@@ -1,4 +1,4 @@
-package org.example.identityservice.dto;
+package org.example.identityservice.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
