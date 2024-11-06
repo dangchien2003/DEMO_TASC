@@ -32,13 +32,14 @@ const SignUpForm = () => {
     if (!comparePassword())
       toastError('Mật khẩu không trùng khớp')
     else {
-      register(username, password).then((response) => {
-        toastSuccess('Đăng ký thành công')
-        setUsername(response.data.result.email)
-        setRegisterSuccess(true)
-      }).catch((error) => {
-        toastError(messageError[error.response.data.code] ?? error.response.data.message)
-      })
+      register(username, password)
+        .then((response) => {
+          toastSuccess('Đăng ký thành công')
+          setUsername(response.data.result.email)
+          setRegisterSuccess(true)
+        }).catch((error) => {
+          toastError(messageError[error.response.data.code] ?? error.response.data.message)
+        })
     }
   }
 

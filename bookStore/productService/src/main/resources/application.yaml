@@ -1,0 +1,13 @@
+server:
+  port: 8083
+  servlet:
+    context-path: "/product"
+
+spring:
+  application:
+    name: bookService
+  datasource:
+    url: jdbc:mysql://localhost:3306/product
+    username: TASC
+    password: chienkoi123
+    driver-class-name: com.mysql.cj.jdbc.Driver

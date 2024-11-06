@@ -15,6 +15,7 @@ export const messageError = {
   1024: 'Thông tin tài khoản hoặc mật khẩu không chính xác',
   1025: 'Tài khoản đã bị khoá',
   1026: 'Tài khoản chưa được xác thực',
+  1027: 'Không tìm thấy tài khoản',
   1030: 'Số trang không hợp lệ',
   1041: 'Chưa đăng nhập',
   1042: 'Không có quyền truy cập',

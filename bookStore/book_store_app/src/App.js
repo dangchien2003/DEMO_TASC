@@ -8,6 +8,7 @@ function App() {
       <Routes>
         <Route path="/auth" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/forget" element={<SignUp />} />
       </Routes>
     </BrowserRouter>
   )

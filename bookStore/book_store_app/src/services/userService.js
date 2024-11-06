@@ -7,3 +7,10 @@ export async function register(email, password) {
     password
   })
 }
+
+export async function registerByGoogle(authorizationCode, codeVerifier) {
+  return await httpClient.post(API_IDENTITY_SERVICE.registerGoogle, {
+    authorizationCode,
+    codeVerifier
+  })
+}

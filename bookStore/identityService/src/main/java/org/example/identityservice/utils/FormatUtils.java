@@ -1,6 +1,9 @@
 package org.example.identityservice.utils;
 
 public class FormatUtils {
+    private FormatUtils() {
+    }
+
     public static String replaceSpaceToUnderline(String value) {
         return value.replace(' ', '_');
     }

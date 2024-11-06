@@ -7,9 +7,7 @@ import org.example.identityservice.exception.ErrorCode;
 import java.util.Locale;
 
 public class ENumUtils {
-
     private ENumUtils() {
-        throw new UnsupportedOperationException("Utility class");
     }
 
     public static <T extends Enum<T>> T getType(Class<T> enumType, String type) {

@@ -30,6 +30,7 @@ public enum ErrorCode {
     INVALID_USERNAME_PASSWORD(1024, "Invalid username or password", HttpStatus.BAD_REQUEST),
     ACCOUNT_LOCKED(1025, "Account has been locked", HttpStatus.FORBIDDEN),
     ACCOUNT_PENDING_VERIFY(1026, "Account pending verification", HttpStatus.FORBIDDEN),
+    USER_NOT_EXIST(1027, "User not exist", HttpStatus.NOT_FOUND),
 
 
     INVALID_PAGE_NUMBER(1030, "Invalid page number", HttpStatus.BAD_REQUEST),

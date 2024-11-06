@@ -19,6 +19,10 @@ public class Role extends EntityWithTimestamps {
     @Id
     @NotNull
     String name;
+
+    @NotNull
+    boolean manager;
+
     String description;
 
     @ManyToMany

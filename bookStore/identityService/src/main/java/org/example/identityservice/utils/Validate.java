@@ -1,6 +1,9 @@
 package org.example.identityservice.utils;
 
 public class Validate {
+    private Validate() {
+    }
+
     public final static int minLengthPassword = 8;
     public final static int maxLengthPassword = 20;
 

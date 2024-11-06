@@ -5,7 +5,7 @@ import React from 'react'
 import { googleAuthentication } from '@/services/authService/loginService'
 import { useNavigate } from 'react-router-dom'
 import { getCodeVerifierToLocalStorage, setCodeVerifierToLocalStorage } from '@/services/localStorageService'
-import { clientId, googleAuthUrl, redirectUri } from '@/configs/googleAuthConfig'
+import { clientId, googleAuthUrl, redirectUriForSignIn } from '@/configs/googleAuthConfig'
 import { toastError } from '@/utils/toast'
 import { messageError } from '@/configs/messageError'
 
@@ -57,7 +57,7 @@ const GoogleLogin = () => {
     const codeChallenge = await generateCodeChallenge(codeVerifier)
     setCodeVerifierToLocalStorage(codeVerifier)
 
-    const authUrl = `${googleAuthUrl}?response_type=code&redirect_uri=${redirectUri}&scope=${scope}&code_challenge=${codeChallenge}&client_id=${clientId}&code_challenge_method=S256`
+    const authUrl = `${googleAuthUrl}?response_type=code&redirect_uri=${redirectUriForSignIn}&scope=${scope}&code_challenge=${codeChallenge}&client_id=${clientId}&code_challenge_method=S256`
     window.location.href = authUrl
   }
 

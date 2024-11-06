@@ -30,7 +30,7 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     UserMapper usersMapper;
 
-    public UserCreationResponse signUp(UserCreationRequest request) {
+    public UserCreationResponse signUp(UserCreationRequest request, boolean registerByGoogleOAuth2) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElse(null);
 
@@ -43,33 +43,14 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOTFOUND));
 
         user.setRole(role);
-        saveUser(user);
+        saveUser(user, registerByGoogleOAuth2);
         return usersMapper.toUserCreationResponse(user);
     }
 
-    private void saveUser(User user) {
+    private void saveUser(User user, boolean registerByGoogleOAuth2) {
         user.setUid(UUID.randomUUID().toString());
-        user.setStatusCode(UserStatus.ACTIVE);
+        user.setStatusCode(registerByGoogleOAuth2 ? UserStatus.ACTIVE : UserStatus.ACTIVE);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user = userRepository.save(user);
-    }
-
-
-    public void createAdmin(UserCreationRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElse(null);
-
-        if (!Objects.isNull(user))
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
-
-        user = usersMapper.toUser(request);
-        user.setUid(UUID.randomUUID().toString());
-        user.setStatusCode(UserStatus.ACTIVE);
-
-        Role role = roleRepository.findById("ADMIN")
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOTFOUND));
-        
-        user.setRole(role);
-        saveUser(user);
     }
 }

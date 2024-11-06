@@ -10,9 +10,8 @@ import { deleteRememberUsername, getRememberUsername, setAccessToken, setRemembe
 import { setRefeshToken } from '@/services/localStorageService'
 import { useNavigate } from 'react-router-dom'
 import { messageError } from '@/configs/messageError'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { Flip } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
+import { toastError } from '@/utils/toast'
 
 const SignInForm = () => {
   const [username, setUsername] = useState(getRememberUsername())
@@ -39,12 +38,12 @@ const SignInForm = () => {
       else
         deleteRememberUsername()
 
-      navigate('/')
+      if (response.data.result.actor === 'ADMIN')
+        navigate('/manager')
+      else
+        navigate('/')
     }).catch((error) => {
-      toast.error(messageError[error.response.data.code] ?? error.response.data.message, {
-        theme: 'colored',
-        transition: Flip
-      })
+      toastError(messageError[error.response.data.code] ?? error.response.data.message)
     })
   }
 

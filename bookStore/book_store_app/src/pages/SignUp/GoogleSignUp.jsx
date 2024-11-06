@@ -2,10 +2,12 @@ import googleSvg from '@/assets/image/google.svg'
 import { Button, Typography } from '@mui/material'
 import { generateCodeChallenge, generateCodeVerifier } from '@/utils/pkceUtils'
 import React from 'react'
-import { googleAuthentication } from '@/services/authService/loginService'
 import { useNavigate } from 'react-router-dom'
 import { getCodeVerifierToLocalStorage, setCodeVerifierToLocalStorage } from '@/services/localStorageService'
-import { clientId, googleAuthUrl, redirectUri } from '@/configs/googleAuthConfig'
+import { clientId, googleAuthUrl, redirectUriForSignUp } from '@/configs/googleAuthConfig'
+import { registerByGoogle } from '@/services/userService'
+import { toastError, toastSuccess } from '@/utils/toast'
+import { messageError } from '@/configs/messageError'
 
 function getAuthorizationCode() {
   const search = window.location.search
@@ -38,10 +40,13 @@ const GoogleSignUp = () => {
       }
 
       try {
-        await googleAuthentication(authorizationCode, codeVerifier)
-        navigate('/')
+        await registerByGoogle(authorizationCode, codeVerifier)
+        toastSuccess('Đăng ký thành công.\nBạn sẽ được đi tới đăng nhập sau 5 giây')
+        setTimeout(() => {
+          navigate('/auth')
+        }, 5000)
       } catch (err) {
-        // handle error
+        toastError(messageError[err.response.data.code] ?? err.response.data.message)
       } finally {
         cleanUrl()
       }
@@ -56,7 +61,7 @@ const GoogleSignUp = () => {
     const codeChallenge = await generateCodeChallenge(codeVerifier)
     setCodeVerifierToLocalStorage(codeVerifier)
 
-    const authUrl = `${googleAuthUrl}?response_type=code&redirect_uri=${redirectUri}&scope=${scope}&code_challenge=${codeChallenge}&client_id=${clientId}&code_challenge_method=S256`
+    const authUrl = `${googleAuthUrl}?response_type=code&redirect_uri=${redirectUriForSignUp}&scope=${scope}&code_challenge=${codeChallenge}&client_id=${clientId}&code_challenge_method=S256`
     window.location.href = authUrl
   }
 
@@ -65,7 +70,7 @@ const GoogleSignUp = () => {
       variant="outlined"
       onClick={handleGoogleSignUp}>
       <img src={googleSvg} alt="google" style={{ height: '25px', paddingRight: '3px' }} />
-      <Typography variant='span' sx={{ lineHeight: '25px' }}>Đăng nhập với google </Typography>
+      <Typography variant='span' sx={{ lineHeight: '25px' }}>Đăng ký với google </Typography>
     </Button>
   )
 }
