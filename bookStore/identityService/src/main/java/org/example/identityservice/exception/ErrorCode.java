@@ -17,7 +17,8 @@ public enum ErrorCode {
     NOTFOUND_ENDPOINT(1004, "URL not found", HttpStatus.NOT_FOUND),
     CUSTOM_MESSAGE(1005, "Error", HttpStatus.BAD_REQUEST),
     LEAD_AND_TRAILING_SPACES(1006, "Contain leading and trailing spaces", HttpStatus.BAD_REQUEST),
-
+    NOTFOUND_ID(1007, "Not found id", HttpStatus.NOT_FOUND),
+    
     PERMISSION_EXISTED(1010, "Permissions exist", HttpStatus.BAD_REQUEST),
     PERMISSION_NOTFOUND(1011, "Permission is not exist", HttpStatus.BAD_REQUEST),
     ROLE_EXISTED(1015, "Role exist", HttpStatus.BAD_REQUEST),

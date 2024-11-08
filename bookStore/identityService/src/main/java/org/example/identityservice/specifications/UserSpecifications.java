@@ -1,4 +1,4 @@
-package org.example.identityservice.Specifications;
+package org.example.identityservice.specifications;
 
 import org.example.identityservice.entity.User;
 import org.springframework.data.jpa.domain.Specification;

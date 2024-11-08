@@ -28,8 +28,10 @@ spring:
     show-sql: true
 springdoc:
   api-docs:
-    path: /v1/api-docs
+    enabled: true
+    path: /api-docs
   swagger-ui:
+    enabled: true
     path: /swagger-ui.html
     operationsSorter: method
     tagsSorter: alpha

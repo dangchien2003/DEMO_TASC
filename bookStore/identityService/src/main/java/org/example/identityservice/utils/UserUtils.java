@@ -70,8 +70,18 @@ public class UserUtils {
                 .accessToken(genAccessToken(user, timeLiveAccessToken, secretKey))
                 .refreshToken(genRefreshToken(userAgent, timeLiveRefreshToken, secretKey))
                 .expire(timeLiveAccessToken * 60)
-                .actor(!Objects.isNull(user.getRole()) ? user.getRole().getName() : null)
+                .actor(identifyActor(user))
                 .build();
+    }
+
+    static String identifyActor(User user) {
+        
+        String actor = null;
+
+        if (!Objects.isNull(user.getRole()))
+            actor = user.getRole().isManager() ? "Manager" : "Customer";
+
+        return actor;
     }
 
     public static String buildScope(User user) {
