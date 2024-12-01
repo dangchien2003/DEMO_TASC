@@ -1,0 +1,30 @@
+Jpa: 
+	jpa là 1 triển khai của orm cung cấp cơ chế ánh xạ giữa các bảng trong db với entity
+	jpa giúp giảm thời gian viết code cho lập trình viên vì chỉ cần thao tác với interface
+	khi thay đổi cơ sở dữ liệu sẽ không cần phải viết lại câu sql.
+	Tự động sinh ra câu sql
+	Linh hoạt giữa native và orm
+	
+	nhưng jpa có tốc độ truy vấn chậm hơn jdbcTemplate
+	vấn đề query n + 1: khi delete, update và save đối tượng vì nó phải sinh ra câu lệnh select trước khi thực hiện thao tác.
+	Khi các bảng có các phụ thuộc vòng tròn thì sẽ bị stackoverflow vì nó cung cấp cơ chế tự động lấy dữ liệu phụ thuộc khi khai báo phụ thuộc cho entity.
+	Để khắc phục ta sử dụng fetch là lazy nó chỉ lấy dữ liệu khi gọi phương thức get, nhưng nó sẽ sinh ra câu lệnh truy vấn thứ 2 nên nó vẫn bị query n + 1;	 
+	
+
+Redis:
+	redis là cơ sở dữ liệu nosql lưu dữ liệu trên ram và dạng key value giúp giảm tải truy cập vào db và giảm thời gian truy xuất dữ liệu vị nó có tốc độ truy xuất rất nhanh.
+	Thường redis sẽ sử dụng để cache dữ liệu thường xuyên được lấy ra như sản phẩm, sản phẩn gợi ý, token, ...
+	Ưu điểm của nó là có tốc độ truy xuất nhanh
+	 hỗ trợ lưu nhiều kiểu dữ liệu
+	tính sẵn sàng cao
+	
+	redis cũng tồn tại nhược điểm như: dễ bị out date với dữ liệu thực trong db. vậy nên không nên lưu dữ liệu cần theo thời gian thực.
+	phải bỏ thêm chi phí quản lý và vận hành
+	
+
+FeignClient: 
+	là thư viện hỗ trợ tạo yêu cầu http 1 cách dễ dàng thông qua các interface và anotation
+	Thường được sủ dụng để giao tiếp giữa các service với nhau.
+	Ưu điểm là dễ sử dụng, dễ tích hợp,
+	Tự động giải mã json
+	Nhưng nó có hiệu suất thấp hơn restTemplate

@@ -1,7 +1,8 @@
 package org.example.productservice.dto.request;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,22 +13,27 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookCreationRequest {
-    @NotNull(message = "INVALID_NAME")
+    @NotBlank(message = "DATA_BLANK")
     String name;
-    int reprintEdition;
-    @Min(value = 1000, message = "Price must be greater than 1000")
-    int price;
-    int costPrice;
-    int discount;
-    int publisherId;
-    long authorId;
-    int pageCount;
-    int availableQuantity;
 
-    String description;
-    String mainImage;
-    String otherImage;
-    String statusCode;
+    @Min(value = 1, message = "Reprint edition must be greater than 1")
+    int reprintEdition;
+
+    @Min(value = 1, message = "Price must be greater than 1")
+    int price;
+
+    @Min(value = 1, message = "Cost price must be greater than 1")
+    int costPrice;
+
+    @Min(value = 0, message = "Discount must be greater than 0")
+    @Max(value = 100, message = "Discount must be less than 100")
+    int discount;
+
+    @Min(value = 0, message = "Page count must be greater than 0")
+    int pageCount;
+
+    @Min(value = 0, message = "Page count must be greater than 0")
+    int availableQuantity;
 
     @Min(value = 1, message = "Width must be greater than 1")
     int width;
@@ -37,4 +43,8 @@ public class BookCreationRequest {
 
     @Min(value = 1, message = "Height must be greater than 1")
     int height;
+
+    Integer publisherId;
+    Long authorId;
+    String description;
 }
