@@ -20,11 +20,63 @@ Redis:
 	
 	redis cũng tồn tại nhược điểm như: dễ bị out date với dữ liệu thực trong db. vậy nên không nên lưu dữ liệu cần theo thời gian thực.
 	phải bỏ thêm chi phí quản lý và vận hành
-	
 
+	update:
+		để khắc phục nhược điểm redis bị out date cách tạo task cập nhật dữ liệu đã bị thay đổi lên redis. những dữ liệu thay đổi sẽ được lưu vào queue và lặp qua để đẩy lên
+		hoặc có thể đẩy lên redis trực tiếp trong khi thay đổi dữ liệu chỉ sử dụng khi nó không liên quan đến dữ liệu redis khác cần thời gian để xử lý.
+		
+		em sử dụng trong việc cache dữ liệu sản phẩm.
+		có 2 task được cài đặt thời gian chạy. task 1 sẽ update toàn bộ sách lên redis 1 ngày 1 lần vào khung giờ
+		ít người sử dụng.
+		task 2: chạy thường xuyên nhưng chạy lại sau mỗi 5 phút. 
+		khi người dùng tiến hành thanh toán e lấy dữ liệu trong db để đảm bảo thông tin là mới nhất
+		
+	
 FeignClient: 
 	là thư viện hỗ trợ tạo yêu cầu http 1 cách dễ dàng thông qua các interface và anotation
 	Thường được sủ dụng để giao tiếp giữa các service với nhau.
 	Ưu điểm là dễ sử dụng, dễ tích hợp,
 	Tự động giải mã json
 	Nhưng nó có hiệu suất thấp hơn restTemplate
+
+kafka:
+	kafka là 1 hệ thống sử dụng để xử lý yêu cầu chuyển tiếp thông điệp dưới dạng stream và sử dụng trong mô hình microservice
+	nó có 2 chứ năng chính là: tiếp nhận, lưu hàng chờ, tiêu thụ.
+	được sử dụng trong việc chuyển tiếp thông điệp tới service khác mà không cần thiết phải được nhận và xử lý 
+	ngay lập tức như gửi email, làm đơn vị giao tiếp trung gian giữa các service
+	trong hệ thống có các khái niệm như: producer, consumer, cluster, broker, topic, partition, ofset, zookeeper.
+	em mới chỉ sử dụng nó với mục đích gửi email.
+
+thread:
+	Luồng là đơn vị nhỏ nhất của 1 tiến trình. trong đó tiến trình và các luồng sẽ chia sẻ tài nguyên cho nhau.
+	Luồng sử dụng để tối ưu hoá thời gian xử lý tác vụ không phụ thuộc vào nhau.
+
+	đơn luồng:
+	có 2 cách tạo ra 1 thread: kế thứ lớp Thread hoặc implement lớp Runable.
+	ưu điểm là nó tiếp kiệm được thời gian xử lý
+	nhược điểm: khó debug, phải quản lý nó, có thể xảy ra tình trạng 2cpu, deadlock.
+
+	đa luồng:
+	Tránh tình trạng 2 cpu ta sử dụng ExecutorService để tạo ra 1 thread pool. 
+	các luồng chạy song song không vượt quá sức chứa của pool.
+	nếu quá chúng phải chờ nhau đến khi có luồng kết thúc.
+	
+	sử dụng để kiểm soát tài nguyên và cài đặt thời gian timeout.
+	khi tổng thời gian chạy các luồng vượt quá thời gian quy định nó sẽ bị huỷ.
+	
+	muốn lấy kết quả của 1 thread ta sử dụng Future và phương thức get.
+
+	
+elastic search:
+	là 1 cơ sở dữ liệu nosql giao tiếp thông qua http.
+	sử dụng trong việc tìm kiếm dữ liệu đặc biệt là tìm kiếm gần đúng bằng từ khoá.
+	ghi log....
+	các khái niêm: cluster, node, index, documents.
+	giúp giảm tải cho db vì có thể thiết kế để client tương tác trực tiếp, tăng tốc độ tìm kiếm. 
+	lưu dữ liệu không có cấu trúc
+	nhược điểm: tăng chi phí, tăng service quản lý, thêm task đồng bộ dữ liệu db với elastic search.
+
+	
+	
+	
+	
